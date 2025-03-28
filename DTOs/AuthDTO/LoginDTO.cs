@@ -1,4 +1,4 @@
-﻿namespace BookStoreApi.DTO.AuthDTO
+﻿namespace Chat_Project.DTOs.AuthDTO
 {
     public class LoginDTO
     {

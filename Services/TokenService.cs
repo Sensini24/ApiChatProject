@@ -2,8 +2,11 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
-using BookStoreApi.Models;
-namespace BookStoreApi.Sevices
+using Chat_Project.Data;
+using Chat_Project.Services;
+using Microsoft.EntityFrameworkCore;
+
+namespace Chat_Project.Services
 {
     public class TokenService : ITokenService
     {
@@ -29,7 +32,7 @@ namespace BookStoreApi.Sevices
             //Convierte la key de appsettings en un conjunto de bytes para que pueda ser codificado
             var keyBytes = Encoding.ASCII.GetBytes(key);
 
-            var userRol = _db.Users.Where(u => u.Id == idUser).FirstOrDefault();
+            var userRol = _db.Users.Where(u => u.UserId == idUser).FirstOrDefaultAsync();
             if (userRol == null) 
             {
                 return "El usuario no existe.";
@@ -39,7 +42,7 @@ namespace BookStoreApi.Sevices
             {
                 new Claim(ClaimTypes.NameIdentifier, idUser.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role,  userRol.Rol)
+                // new Claim(ClaimTypes.Role,  userRol.Rol)
             };
 
             //Una vez convertida la key en bytes y codificada, puede usarse para verificar y firmar el token. Y eso hace SymmetricSecurity, verifica y firma el codigo criptografiado a bytes previamente.

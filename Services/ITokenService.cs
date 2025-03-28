@@ -1,4 +1,4 @@
-﻿namespace BookStoreApi.Sevices
+﻿namespace Chat_Project.Services
 {
     public interface ITokenService
     {
