@@ -1,4 +1,6 @@
 using Chat_Project.Data;
+using Chat_Project.DTOs.UserDTO;
+using Chat_Project.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,12 +16,69 @@ public class UserController : Controller
     {
         _context = context;
     }
-    // GET
+
+    [HttpGet]
+    [Route("getUser/{userId}")]
+    public async Task<IActionResult> GetUser([FromRoute] int userId)
+    {
+        try
+        {
+            var user = await _context.Users.FromSqlInterpolated($"Select * From Users WHERE UserId = {userId}").FirstAsync();
+
+            var userdto = new UserInfoDTO
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Email = user.Email,
+                Gender =  (Gender)user.Gender// Convertir el valor del enum a string
+            };
+            return Ok(new
+            {
+                success = true,
+                userdto
+            });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                e
+            });
+        }
+    }
+
+
     [HttpGet]
     [Route("getUsers")]
-    public IActionResult Get()
+    public async Task<IActionResult> GetUsers()
     {
-        var users = _context.Users.ToList();
-        return Ok(users);
+        try
+        {
+            var users = await _context.Users.FromSqlInterpolated($"Select * From Users").ToListAsync();
+
+            var userdto = users.Select(x => new UserInfoDTO
+            {
+                UserId = x.UserId,
+                Username = x.Username,
+                Email = x.Email,
+                Gender = (Gender)x.Gender// Convertir el valor del enum a string
+            });
+
+
+            return Ok(new
+            {
+                success = true,
+                userdto
+            });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                e
+            });
+        }
     }
 }

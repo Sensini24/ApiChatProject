@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Chat_Project.Models;
 
 public enum Gender
@@ -13,6 +15,9 @@ public class User
     public string Username { get; set; }
     public string Email { get; set; }
     public string PasswordHash { get; set; }
+
+
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public Gender Gender { get; set; }
 
     // Propiedad de navegación para mensajes enviados

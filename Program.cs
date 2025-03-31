@@ -81,6 +81,7 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<ChatHub>("/chatHub");
+app.MapHub<IdentifyHub>("/identifyHub");
 app.MapControllers();
 
 app.Run();
