@@ -32,6 +32,132 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Chat_Project.Controllers.ChatController",
+    "Method": "Index",
+    "RelativePath": "api/Chat",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.ChatController",
+    "Method": "Create",
+    "RelativePath": "api/Chat",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.ChatController",
+    "Method": "Create",
+    "RelativePath": "api/Chat",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "collection",
+        "Type": "Microsoft.AspNetCore.Http.IFormCollection",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.ChatController",
+    "Method": "Edit",
+    "RelativePath": "api/Chat",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.ChatController",
+    "Method": "Edit",
+    "RelativePath": "api/Chat",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "collection",
+        "Type": "Microsoft.AspNetCore.Http.IFormCollection",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.ChatController",
+    "Method": "Delete",
+    "RelativePath": "api/Chat",
+    "HttpMethod": "",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.ChatController",
+    "Method": "Delete",
+    "RelativePath": "api/Chat",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "collection",
+        "Type": "Microsoft.AspNetCore.Http.IFormCollection",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.ChatController",
+    "Method": "CreateChat",
+    "RelativePath": "api/Chat/createChat",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "chataddDTO",
+        "Type": "Chat_Project.DTOs.ChatDTO.ChatAddDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Chat_Project.Controllers.UserController",
     "Method": "GetUser",
     "RelativePath": "api/User/getUser/{userId}",

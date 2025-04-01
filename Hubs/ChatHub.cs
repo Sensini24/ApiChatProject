@@ -22,7 +22,6 @@ public class ChatHub:Hub
     
     public override async Task OnConnectedAsync()
     {
-        // SortedDictionary<int, int> connectionsId = new SortedDictionary<int, int>();
        
         var usuario = await _userService.ObtenerInfoUser();
         int userId = usuario.UserId;

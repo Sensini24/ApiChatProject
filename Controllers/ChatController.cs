@@ -2,12 +2,16 @@
 using Chat_Project.DTOs.ChatDTO;
 using Chat_Project.DTOs.MessageDTO;
 using Chat_Project.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chat_Project.Controllers
 {
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
     public class ChatController : Controller
     {
         private readonly DataContext _db;
@@ -35,10 +39,10 @@ namespace Chat_Project.Controllers
                 try
                 {
                     var namechat = chataddDTO.NameChat;
-                    var existChat = await _db.Chats.FirstOrDefaultAsync(x => x.NameChat == namechat);
-                    Chat chat;
+                    var chat = await _db.Chats.Include(cp=>cp.ChatParticipants).FirstOrDefaultAsync(x => x.NameChat == namechat);
+                    bool isNewChat = chat == null;
 
-                    if (existChat == null)
+                    if (isNewChat)
                     {
                         chat = new Chat()
                         {
@@ -50,35 +54,10 @@ namespace Chat_Project.Controllers
                         _db.Chats.Add(chat);
                         await _db.SaveChangesAsync();
                     }
-                    else
+
+                    if (isNewChat && chataddDTO.ChatParticipants?.Any() == true)
                     {
-                        chat = existChat;
-                    }
-
-                    if (chataddDTO.Messages?.Any() == true)
-                    {
-                        var messages = chataddDTO.Messages.Select(m => new Message()
-                        {
-                            UserId = m.UserId,
-                            ChatId = chat.Id,
-                            MessageText = m.MessageText,
-                            MessageDate = DateTime.UtcNow,
-                            IsRead = false,
-                            IsDeleted = false,
-                        }).ToList();
-
-                        _db.Messages.AddRange(messages);
-                    }
-
-                    if (chataddDTO.ChatParticipants?.Any() == true)
-                    {
-                        var existingUserIds = _db.ChatParticipants
-                            .Where(cp => cp.ChatId == chat.Id)
-                            .Select(cp => cp.UserId)
-                            .ToHashSet();
-
                         var newParticipants = chataddDTO.ChatParticipants
-                            .Where(cp => !existingUserIds.Contains(cp.UserId))
                             .Select(cp => new ChatParticipant()
                             {
                                 UserId = cp.UserId,
@@ -88,6 +67,17 @@ namespace Chat_Project.Controllers
                         _db.ChatParticipants.AddRange(newParticipants);
                     }
 
+                    var messages = chataddDTO.Messages.Select(m => new Message()
+                    {
+                        UserId = m.UserId,
+                        ChatId = chat.Id,
+                        MessageText = m.MessageText,
+                        MessageDate = DateTime.UtcNow,
+                        IsRead = false,
+                        IsDeleted = false,
+                    }).ToList();
+
+                    _db.Messages.AddRange(messages);
                     await _db.SaveChangesAsync();
                     await transaction.CommitAsync();
 
@@ -100,6 +90,88 @@ namespace Chat_Project.Controllers
                 }
             }
         }
+
+
+        //[HttpPost]
+        //[Route("createChat")]
+        //public async Task<ActionResult> CreateChat([FromBody] ChatAddDTO chataddDTO)
+        //{
+        //    if (chataddDTO == null)
+        //    {
+        //        return BadRequest(new { success = false, message = "El chat debe tener contenido" });
+        //    }
+
+        //    using (var transaction = await _db.Database.BeginTransactionAsync())
+        //    {
+        //        try
+        //        {
+        //            var namechat = chataddDTO.NameChat;
+        //            var existChat = await _db.Chats.FirstOrDefaultAsync(x => x.NameChat == namechat);
+
+        //            Chat chat;
+
+        //            if (existChat == null)
+        //            {
+        //                chat = new Chat()
+        //                {
+        //                    NameChat = chataddDTO.NameChat,
+        //                    Messages = new List<Message>(),
+        //                    ChatParticipants = new List<ChatParticipant>(),
+        //                };
+
+        //                _db.Chats.Add(chat);
+        //                await _db.SaveChangesAsync();
+        //            }
+        //            else
+        //            {
+        //                chat = existChat;
+        //            }
+
+        //            if (chataddDTO.Messages?.Any() == true)
+        //            {
+        //                var messages = chataddDTO.Messages.Select(m => new Message()
+        //                {
+        //                    UserId = m.UserId,
+        //                    ChatId = chat.Id,
+        //                    MessageText = m.MessageText,
+        //                    MessageDate = DateTime.UtcNow,
+        //                    IsRead = false,
+        //                    IsDeleted = false,
+        //                }).ToList();
+
+        //                _db.Messages.AddRange(messages);
+        //            }
+
+        //            if (chataddDTO.ChatParticipants?.Any() == true)
+        //            {
+        //                var existingUserIds = _db.ChatParticipants
+        //                    .Where(cp => cp.ChatId == chat.Id)
+        //                    .Select(cp => cp.UserId)
+        //                    .ToHashSet();
+
+        //                var newParticipants = chataddDTO.ChatParticipants
+        //                    .Where(cp => !existingUserIds.Contains(cp.UserId))
+        //                    .Select(cp => new ChatParticipant()
+        //                    {
+        //                        UserId = cp.UserId,
+        //                        ChatId = chat.Id
+        //                    }).ToList();
+
+        //                _db.ChatParticipants.AddRange(newParticipants);
+        //            }
+
+        //            await _db.SaveChangesAsync();
+        //            await transaction.CommitAsync();
+
+        //            return Ok(new { success = true, message = "El chat ha sido guardado correctamente." });
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            await transaction.RollbackAsync();
+        //            return StatusCode(500, new { success = false, message = ex.Message });
+        //        }
+        //    }
+        //}
 
 
         // GET: ChatController/Create
