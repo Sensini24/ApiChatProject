@@ -90,7 +90,91 @@ namespace Chat_Project.Controllers
                 }
             }
         }
+        [HttpGet]
+        [Route("getPrivateChat1/{nameChat}")]
+        public async Task<ActionResult> Get([FromRoute] string nameChat)
+        {
+            if (String.IsNullOrEmpty(nameChat))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Asegurate de enviar un nombre de chat adecuado"
+                });
+            }
+            var chat = _db.Chats.Where(c => c.NameChat == nameChat).FirstOrDefault();
+            if(chat == null)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "No se encontró un chat con ese nombre"
+                });
+            }
+            return Ok(new
+            {
+                success = true,
+                message = "Chat obtenido exitosamente",
+                chat
+            });
+        }
 
+        [HttpGet]
+        [Route("getPrivateChat2/{nameChat}/{filasObtener}")]
+        public async Task<ActionResult> GetMessagesLimit([FromRoute] string nameChat, [FromRoute] int filasObtener)
+        {
+            int filasObtenerConsulta = filasObtener;
+            if (String.IsNullOrEmpty(nameChat))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Asegurate de enviar un nombre de chat adecuado"
+                });
+            }
+            var chat = _db.Messages
+                .Include(c => c.Chat)
+                .Include(c => c.Chat.ChatParticipants)
+                .Where(c => c.Chat.NameChat == nameChat)
+                
+                .OrderBy(c => c.Id)
+                .Skip(0)
+                .Take(filasObtenerConsulta)
+                .ToList();
+
+            //var chat = _db.Chats.FromSqlInterpolated<Chat>
+            //    (
+            //    $"SELECT * FROM Messages m INNER JOIN Chats ch ON m.ChatId = ch.Id
+            //     INNER JOIN 
+            //    WHERE ch.NameChat = {nameChat} ORDER BY m.Id ASC OFFSET 0 ROWS FETCH NEXT {filasObtenerConsulta} ROWS ONLY"
+            //    );
+
+            if (chat.Count() < filasObtenerConsulta)
+            {
+                return Ok(new
+                {
+                    success = true,
+                    message = "Ya no hay más chats para ver",
+                    chat
+                });
+            }
+
+            if (chat == null)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "No se encontró un chat con ese nombre",
+                    chat
+                });
+            }
+            return Ok(new
+            {
+                success = true,
+                message = "Chat obtenido exitosamente",
+                chat
+            });
+        }
 
         //[HttpPost]
         //[Route("createChat")]

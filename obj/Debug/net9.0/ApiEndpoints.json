@@ -158,6 +158,43 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "Chat_Project.Controllers.ChatController",
+    "Method": "Get",
+    "RelativePath": "api/Chat/getPrivateChat1/{nameChat}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "nameChat",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.ChatController",
+    "Method": "GetMessagesLimit",
+    "RelativePath": "api/Chat/getPrivateChat2/{nameChat}/{filasObtener}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "nameChat",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "filasObtener",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Chat_Project.Controllers.UserController",
     "Method": "GetUser",
     "RelativePath": "api/User/getUser/{userId}",

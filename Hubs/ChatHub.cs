@@ -3,6 +3,8 @@ using Chat_Project.Models;
 using Chat_Project.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace Chat_Project.Hubs;
 
 [Authorize]
@@ -58,6 +60,9 @@ public class ChatHub:Hub
         }
         await base.OnDisconnectedAsync(exception);
     }
+
+
+
     public async Task SendMessageToAll(string message)
     {
         var user = _userService.ObtenerInfoUser();
@@ -66,8 +71,25 @@ public class ChatHub:Hub
         var userId =  user.Result.UserId;
         var userIdClaims = int.Parse(Context.User.FindFirst(ClaimTypes.NameIdentifier).Value);  
         var connectionId = Context.ConnectionId;
-        await Clients.All.SendAsync("ReceiveMessage", username, message, userId, connectionId);
+        var date = DateTime.Now;
+        await Clients.All.SendAsync("ReceiveMessage", username, message, userId, connectionId, date);
     }
+
+
+    public async Task SendPrivateMessage(string recipientConnectionId, string message)
+    {
+        var user = _userService.ObtenerInfoUser();
+        string username = user.Result.Username;
+
+        var userId = user.Result.UserId;
+        var userIdClaims = int.Parse(Context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        var senderconnectionId = Context.ConnectionId;
+        var date = DateTime.Now;
+        await Clients.Client(recipientConnectionId).SendAsync("ReceivePrivateMessage", message, username, userId, senderconnectionId, date);
+
+        await Clients.Client(senderconnectionId).SendAsync("ReceivePrivateMessage", message, username, userId, senderconnectionId, date);
+    }
+
 
     public async Task isTyping(bool isTyping)
     {
