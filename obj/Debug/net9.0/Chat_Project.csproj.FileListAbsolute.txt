@@ -147,7 +147,6 @@ D:\Proyectos c#\Chat_Project\Chat_Project\obj\Debug\net9.0\staticwebassets\msbui
 D:\Proyectos c#\Chat_Project\Chat_Project\obj\Debug\net9.0\staticwebassets\msbuild.buildMultiTargeting.Chat_Project.props
 D:\Proyectos c#\Chat_Project\Chat_Project\obj\Debug\net9.0\staticwebassets\msbuild.buildTransitive.Chat_Project.props
 D:\Proyectos c#\Chat_Project\Chat_Project\obj\Debug\net9.0\staticwebassets.pack.json
-D:\Proyectos c#\Chat_Project\Chat_Project\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 D:\Proyectos c#\Chat_Project\Chat_Project\obj\Debug\net9.0\Chat_Pro.6189FD35.Up2Date
 D:\Proyectos c#\Chat_Project\Chat_Project\obj\Debug\net9.0\Chat_Project.dll
 D:\Proyectos c#\Chat_Project\Chat_Project\obj\Debug\net9.0\refint\Chat_Project.dll
@@ -157,3 +156,4 @@ D:\Proyectos c#\Chat_Project\Chat_Project\bin\Debug\net9.0\Chat_Project.runtimec
 D:\Proyectos c#\Chat_Project\Chat_Project\bin\Debug\net9.0\Chat_Project.pdb
 D:\Proyectos c#\Chat_Project\Chat_Project\obj\Debug\net9.0\Chat_Project.genruntimeconfig.cache
 D:\Proyectos c#\Chat_Project\Chat_Project\obj\Debug\net9.0\ref\Chat_Project.dll
+D:\Proyectos c#\Chat_Project\Chat_Project\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt

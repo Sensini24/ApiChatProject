@@ -14,6 +14,7 @@ public class DataContext : DbContext
     public DbSet<Chat> Chats { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<ChatParticipant> ChatParticipants { get; set; }
+    public DbSet<Contact> Contacts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,6 +43,18 @@ public class DataContext : DbContext
             .HasOne(p => p.User)
             .WithMany(p => p.Messages)
             .HasForeignKey(p=>p.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Contact>()
+            .HasOne(p=>p.User)
+            .WithMany(c=>c.Contacts) //UN usuario puede tener muchos contacto, pero un contacto en particular es de un usuario.
+            .HasForeignKey(p=>p.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Contact>()
+            .HasOne(p => p.ContactUser)
+            .WithMany()
+            .HasForeignKey(p => p.ContactUserId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

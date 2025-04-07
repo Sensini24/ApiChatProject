@@ -196,6 +196,16 @@
   },
   {
     "ContainingType": "Chat_Project.Controllers.UserController",
+    "Method": "GetUserCurrent",
+    "RelativePath": "api/User/getCurrentUser",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.UserController",
     "Method": "GetUser",
     "RelativePath": "api/User/getUser/{userId}",
     "HttpMethod": "GET",

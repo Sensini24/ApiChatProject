@@ -24,4 +24,5 @@ public class User
     public ICollection<Message> Messages { get; set; }
     // Propiedad de navegación para chats en los que participa
     public ICollection<ChatParticipant> ChatParticipants { get; set; }
+    public ICollection<Contact> Contacts { get; set; }
 }

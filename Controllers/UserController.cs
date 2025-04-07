@@ -2,11 +2,13 @@ using System.Security.Claims;
 using Chat_Project.Data;
 using Chat_Project.DTOs.UserDTO;
 using Chat_Project.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Chat_Project.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : Controller
