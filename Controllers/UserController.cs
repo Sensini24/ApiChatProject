@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Chat_Project.Data;
 using Chat_Project.DTOs.UserDTO;
 using Chat_Project.Models;
@@ -15,6 +16,38 @@ public class UserController : Controller
     public UserController(DataContext context)
     {
         _context = context;
+    }
+
+    [HttpGet]
+    [Route("getCurrentUser")]
+    public async Task<IActionResult> GetUserCurrent()
+    {
+        try
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var user = await _context.Users.FromSqlInterpolated($"Select * From Users WHERE UserId = {userId}").FirstAsync();
+
+            var userdto = new UserInfoDTO
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Email = user.Email,
+                Gender = (Gender)user.Gender// Convertir el valor del enum a string
+            };
+            return Ok(new
+            {
+                success = true,
+                userdto
+            });
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                e
+            });
+        }
     }
 
     [HttpGet]

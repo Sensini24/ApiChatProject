@@ -1,5 +1,6 @@
 ﻿using Chat_Project.Data;
 using Chat_Project.DTOs.ChatDTO;
+using Chat_Project.DTOs.ChatParticipantsDTO;
 using Chat_Project.DTOs.MessageDTO;
 using Chat_Project.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -142,6 +143,38 @@ namespace Chat_Project.Controllers
                 .Take(filasObtenerConsulta)
                 .ToList();
 
+
+            if (chat == null || chat.Count() == 0)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "No se encontró un chat con ese nombre o no tiene elementos."
+                });
+            }
+
+            var chatDto = new ChatGetDTO
+            {
+                Id = chat.First().Chat.Id,
+                NameChat = chat.First().Chat.NameChat,
+                Messages = chat.Select(x => new MessageGetDTO
+                {
+                    UserId = x.UserId,
+                    MessageText = x.MessageText,
+                    UserName = _db.Users?.Where(e => e.UserId == x.UserId).Select(x => x.Username).FirstOrDefault(),
+                    ChatId = x.ChatId,
+                    MessageDate = x.MessageDate,
+                    IsRead = x.IsRead,
+                    IsDeleted = x.IsDeleted
+                }).ToList(),
+                ChatParticipants = chat.First().Chat.ChatParticipants.Select(cp => new ChatParticipantsGetDTO
+                {
+                    Id = cp.Id,
+                    UserId = cp.UserId,
+                    ChatId = cp.ChatId
+                }).ToList()
+            };
+
             //var chat = _db.Chats.FromSqlInterpolated<Chat>
             //    (
             //    $"SELECT * FROM Messages m INNER JOIN Chats ch ON m.ChatId = ch.Id
@@ -155,24 +188,16 @@ namespace Chat_Project.Controllers
                 {
                     success = true,
                     message = "Ya no hay más chats para ver",
-                    chat
+                    chatDto
                 });
             }
 
-            if (chat == null)
-            {
-                return NotFound(new
-                {
-                    success = false,
-                    message = "No se encontró un chat con ese nombre",
-                    chat
-                });
-            }
+            
             return Ok(new
             {
                 success = true,
                 message = "Chat obtenido exitosamente",
-                chat
+                chatDto
             });
         }
 

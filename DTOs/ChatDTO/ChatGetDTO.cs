@@ -8,8 +8,8 @@ namespace Chat_Project.DTOs.ChatDTO
         public int Id { get; set; }
         public string NameChat { get; set; }
 
-        public ICollection<MessageAddDTO> Messages { get; set; }
+        public ICollection<MessageGetDTO> Messages { get; set; }
 
-        public ICollection<ChatParticipantsAddDTO> ChatParticipants { get; set; }
+        public ICollection<ChatParticipantsGetDTO> ChatParticipants { get; set; }
     }
 }
