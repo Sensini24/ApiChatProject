@@ -1,6 +1,6 @@
 ﻿using Chat_Project.Models;
 
-namespace Chat_Project.DTOs
+namespace Chat_Project.DTOs.ContactDTO
 {
     public class ContactGetDTO
     {

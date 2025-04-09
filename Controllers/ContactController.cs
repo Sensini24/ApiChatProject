@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Chat_Project.Data;
-using Chat_Project.DTOs;
+using Chat_Project.DTOs.ContactDTO;
+using Chat_Project.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,10 +46,38 @@ namespace Chat_Project.Controllers
             });
         }
 
-        // GET: ContactController/Details/5
-        public ActionResult Details(int id)
+        [HttpPost]
+        [Route("addContact")]
+        public async Task<IActionResult> AddContact([FromBody] ContactAddDTO contactdto)
         {
-            return View();
+            if (contactdto == null)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Contacto inválido"
+                });
+            }
+
+            var newContact = new Contact
+            {
+                UserId = contactdto.UserId,
+                ContactUserId = contactdto.ContactUserId,
+                NickName = contactdto.NickName,
+                DateAdded = DateTime.Now,
+                IsFavorite = false,
+                IsDeleted = false,
+                IsBlocked = false
+            };
+
+            await _db.Contacts.AddAsync(newContact);
+            await _db.SaveChangesAsync();
+            return Ok(new
+            {
+                success = true,
+                message = "Contacto guardado",
+                contacto = newContact
+            });
         }
 
         // GET: ContactController/Create

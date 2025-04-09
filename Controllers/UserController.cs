@@ -101,9 +101,37 @@ public class UserController : Controller
             });
 
 
+            return Ok(userdto);
+        }
+        catch (Exception e)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                e
+            });
+        }
+    }
+
+    [HttpGet]
+    [Route("findUser/{initials}")]
+    public async Task<IActionResult> FindUsersByInitials(string initials)
+    {
+        try
+        {
+            var users = await _context.Users.FromSqlInterpolated($"SELECT * FROM Users where Username LIKE {initials+"%"}").ToListAsync();
+            //var userFound = await _context.Users.Where(x => x.Username.Contains(initials)).ToListAsync();
+            var userdto = users.Select(x => new UserInfoDTO
+            {
+                UserId = x.UserId,
+                Username = x.Username,
+                Email = x.Email,
+                Gender = (Gender)x.Gender// Convertir el valor del enum a string
+            });
+
+
             return Ok(new
             {
-                success = true,
                 userdto
             });
         }
@@ -116,4 +144,6 @@ public class UserController : Controller
             });
         }
     }
+
+    
 }
