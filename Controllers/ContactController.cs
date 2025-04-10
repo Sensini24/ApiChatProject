@@ -59,7 +59,18 @@ namespace Chat_Project.Controllers
                 });
             }
 
-            var newContact = new Contact
+            var currentUser = _db.Users.Where(x => x.UserId == contactdto.UserId).FirstOrDefault();
+
+            if(currentUser == null)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "No se pudo obtener los datos del usuario logeado"
+                });
+            }
+
+            var newContact1 = new Contact
             {
                 UserId = contactdto.UserId,
                 ContactUserId = contactdto.ContactUserId,
@@ -70,13 +81,26 @@ namespace Chat_Project.Controllers
                 IsBlocked = false
             };
 
-            await _db.Contacts.AddAsync(newContact);
+            await _db.Contacts.AddAsync(newContact1);
+            var newContact2 = new Contact
+            {
+                UserId = contactdto.ContactUserId,
+                ContactUserId = contactdto.UserId,
+                NickName = currentUser.Username,
+                DateAdded = DateTime.Now,
+                IsFavorite = false,
+                IsDeleted = false,
+                IsBlocked = false
+            };
+
+            await _db.Contacts.AddAsync(newContact2);
+
             await _db.SaveChangesAsync();
             return Ok(new
             {
                 success = true,
                 message = "Contacto guardado",
-                contacto = newContact
+                contacto = newContact1
             });
         }
 
