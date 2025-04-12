@@ -1,0 +1,209 @@
+﻿using System.Security.Claims;
+using Chat_Project.Data;
+using Chat_Project.DTOs.GroupDTO;
+using Chat_Project.DTOs.GroupParticipantsDTO;
+using Chat_Project.DTOs.MessageGroupDTO;
+using Chat_Project.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace Chat_Project.Controllers
+{
+    [Authorize]
+    [ApiController]
+    [Route("api/[controller]")]
+    public class GroupController : Controller
+    {
+        private readonly DataContext _db;
+        public GroupController (DataContext db)
+        {
+            _db = db;
+        }
+        [HttpGet]
+        [Route("getGroups")]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                var grupoCompleto = _db.Groups
+                .Include(c => c.GroupParticipants)
+                .Where(gp => gp.GroupParticipants.Any(x => x.UserId == userId)).ToList();
+
+                if (grupoCompleto == null)
+                {
+                    return NotFound(new
+                    {
+                        success = false,
+                        message = "Guardado con éxito pero no se encontró un resultado que devolver en base de datos."
+                    });
+                }
+
+                var gruposcompletosdto = grupoCompleto.Select(x => new GroupGetSimpleDTO
+                {
+                    GroupId = x.GroupId,
+                    NameGroup = x.NameGroup,
+                    DateCreated = x.DateCreated,
+                    IsDeleted = x.IsDeleted,
+                    GroupCategory = x.GroupCategory,
+                    GroupParticipants = x.GroupParticipants.Select(x => new GroupParticipantsGetDTO
+                    {
+                        GroupParticipantsId = x.GroupParticipantsId,
+                        UserId = x.UserId,
+                        GroupId = x.GroupId,
+                        DateJoined = x.DateJoined,
+                        Rol = x.Rol,
+                        isFavorite = x.isFavorite
+
+                    }).ToList()
+                });
+                return Ok(new
+                {
+                    success = true,
+                    message = "Grupo creado correctamente",
+                    groups = gruposcompletosdto
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "Ocurrió un error en el servidor.", error = ex.Message });
+            }
+        }
+
+        // POST: GroupController/Create
+        [HttpPost]
+        [Route("createGroup")]
+        public async Task <IActionResult> Create([FromBody] GroupAddDTO groupaddto)
+        {
+            try
+            {
+                if (groupaddto == null)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "Envíe un grupo válido con contenido"
+                    });
+                }
+
+                var grupo = new Group
+                {
+                    NameGroup = groupaddto.NameGroup,
+                    DateCreated = DateTime.Now,
+                    IsDeleted = false,
+                    GroupCategory = groupaddto.GroupCategory,
+                    GroupParticipants = new List<GroupParticipants>(),
+                    GroupMessages = new List<MessagesGroup>()
+                };
+
+                await _db.Groups.AddAsync(grupo);
+                await _db.SaveChangesAsync();
+
+                var groupParticipants = groupaddto.GroupParticipants.Select(x => new GroupParticipants
+                {
+                    UserId = x.UserId,
+                    GroupId = grupo.GroupId,
+                    DateJoined = DateTime.Now,
+                    InvitationStatus = "Creator",
+                    Rol = "Creator",
+                    isFavorite = false
+                }).ToList();
+                await _db.AddRangeAsync(groupParticipants);
+                await _db.SaveChangesAsync();
+
+                var grupoCompleto = await _db.Groups.Where(g=>g.GroupId == grupo.GroupId).Include(gp=>gp.GroupParticipants).FirstOrDefaultAsync();
+                if (grupoCompleto == null)
+                {
+                    return NotFound(new
+                    {
+                        success = false,
+                        message = "Guardado con éxito pero no se encontró un resultado que devolver en base de datos."
+                    });
+                }
+
+                var grupocompletodto = new GroupGetDTO()
+                {
+                    GroupId = grupoCompleto.GroupId,
+                    NameGroup = grupoCompleto.NameGroup,
+                    DateCreated = grupoCompleto.DateCreated,
+                    IsDeleted = grupoCompleto.IsDeleted,
+                    GroupCategory = grupoCompleto.GroupCategory,
+                    GroupParticipants = grupoCompleto.GroupParticipants.Select(x => new GroupParticipantsGetDTO
+                    {
+                        GroupParticipantsId = x.GroupParticipantsId,
+                        UserId = x.UserId,
+                        GroupId = x.GroupId,
+                        DateJoined = x.DateJoined,
+                        Rol = x.Rol,
+                        isFavorite = x.isFavorite
+
+                    }).ToList(),
+
+                    GroupMessages = grupoCompleto.GroupMessages.Select(x => new MessageGroupGetDTO
+                    {
+                        MessagesGroupId = x.MessagesGroupId,
+                        UserId = x.UserId,
+                        GroupId = x.GroupId,
+                        MessageText = x.MessageText,
+                        MessageDate = x.MessageDate
+
+                    }).ToList()
+                };
+                return Ok(new
+                {
+                    success = true,
+                    message = "Grupo creado correctamente",
+                    group = grupocompletodto
+                });
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "Ocurrió un error en el servidor.", error = ex.Message });
+            }
+        }
+
+        // GET: GroupController/Edit/5
+        public ActionResult Edit(int id)
+        {
+            return View();
+        }
+
+        // POST: GroupController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, IFormCollection collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: GroupController/Delete/5
+        public ActionResult Delete(int id)
+        {
+            return View();
+        }
+
+        // POST: GroupController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, IFormCollection collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+    }
+}

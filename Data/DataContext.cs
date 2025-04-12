@@ -15,6 +15,9 @@ public class DataContext : DbContext
     public DbSet<Message> Messages { get; set; }
     public DbSet<ChatParticipant> ChatParticipants { get; set; }
     public DbSet<Contact> Contacts { get; set; }
+    public DbSet<Group> Groups { get; set; }
+    public DbSet<GroupParticipants> GroupParticipants { get; set; }
+    public DbSet<MessagesGroup> MessagesGroups { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -55,6 +58,30 @@ public class DataContext : DbContext
             .HasOne(p => p.ContactUser)
             .WithMany()
             .HasForeignKey(p => p.ContactUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<GroupParticipants>()
+            .HasOne(p=>p.User)
+            .WithMany(p=>p.GroupParticipants)
+            .HasForeignKey(p=>p.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<GroupParticipants>()
+            .HasOne(p => p.Group)
+            .WithMany(p => p.GroupParticipants)
+            .HasForeignKey(p => p.GroupId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<MessagesGroup>()
+            .HasOne(p => p.User)
+            .WithMany(p => p.GroupMessages)
+            .HasForeignKey(p => p.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<MessagesGroup>()
+            .HasOne(p => p.Group)
+            .WithMany(p => p.GroupMessages)
+            .HasForeignKey(p => p.GroupId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }
