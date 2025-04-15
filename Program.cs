@@ -82,6 +82,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapHub<ChatHub>("/chatHub");
 app.MapHub<IdentifyHub>("/identifyHub");
+app.MapHub<GroupHub>("/groupHub");
+
 app.MapControllers();
 
 app.Run();

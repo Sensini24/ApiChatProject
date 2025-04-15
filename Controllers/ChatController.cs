@@ -73,7 +73,7 @@ namespace Chat_Project.Controllers
                         UserId = m.UserId,
                         ChatId = chat.Id,
                         MessageText = m.MessageText,
-                        MessageDate = DateTime.UtcNow,
+                        MessageDate = DateTime.Now,
                         IsRead = false,
                         IsDeleted = false,
                     }).ToList();
@@ -144,9 +144,9 @@ namespace Chat_Project.Controllers
                 .ToList();
 
 
-            if (chat == null || chat.Count() == 0)
+            if (chat == null || chat.Count == 0)
             {
-                return NotFound(new
+                return Ok(new
                 {
                     success = false,
                     message = "No se encontró un chat con ese nombre o no tiene elementos."
@@ -159,6 +159,7 @@ namespace Chat_Project.Controllers
                 NameChat = chat.First().Chat.NameChat,
                 Messages = chat.Select(x => new MessageGetDTO
                 {
+                    Id = x.Id,
                     UserId = x.UserId,
                     MessageText = x.MessageText,
                     UserName = _db.Users?.Where(e => e.UserId == x.UserId).Select(x => x.Username).FirstOrDefault(),

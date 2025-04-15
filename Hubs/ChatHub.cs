@@ -76,7 +76,7 @@ public class ChatHub:Hub
     }
 
 
-    public async Task SendPrivateMessage(string recipientConnectionId, string message)
+    public async Task SendPrivateMessage(string recipientConnectionId, string message, string chatName)
     {
         var user = _userService.ObtenerInfoUser();
         string username = user.Result.Username;
@@ -85,9 +85,9 @@ public class ChatHub:Hub
         var userIdClaims = int.Parse(Context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
         var senderconnectionId = Context.ConnectionId;
         var date = DateTime.Now;
-        await Clients.Client(recipientConnectionId).SendAsync("ReceivePrivateMessage", message, username, userId, senderconnectionId, date);
+        await Clients.Client(recipientConnectionId).SendAsync("ReceivePrivateMessage", message, username, userId, senderconnectionId, date, chatName);
 
-        await Clients.Client(senderconnectionId).SendAsync("ReceivePrivateMessage", message, username, userId, senderconnectionId, date);
+        await Clients.Client(senderconnectionId).SendAsync("ReceivePrivateMessage", message, username, userId, senderconnectionId, date, chatName);
     }
 
 
