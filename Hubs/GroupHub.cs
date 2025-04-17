@@ -20,10 +20,10 @@ namespace Chat_Project.Hubs
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
 
-        public async Task SendMessageToGroup(string groupName, string user, string message)
+        public async Task SendMessageToGroup(string groupName, int groupId, string user, string message)
         {
             int userId = int.Parse(Context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", user, userId, message);
+            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", groupName, groupId, user, userId, message);
         }
     }
 }

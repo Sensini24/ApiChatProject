@@ -322,80 +322,6 @@
   },
   {
     "ContainingType": "Chat_Project.Controllers.GroupController",
-    "Method": "Edit",
-    "RelativePath": "api/Group",
-    "HttpMethod": "",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Chat_Project.Controllers.GroupController",
-    "Method": "Edit",
-    "RelativePath": "api/Group",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "collection",
-        "Type": "Microsoft.AspNetCore.Http.IFormCollection",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Chat_Project.Controllers.GroupController",
-    "Method": "Delete",
-    "RelativePath": "api/Group",
-    "HttpMethod": "",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Chat_Project.Controllers.GroupController",
-    "Method": "Delete",
-    "RelativePath": "api/Group",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "collection",
-        "Type": "Microsoft.AspNetCore.Http.IFormCollection",
-        "IsRequired": false
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "Chat_Project.Controllers.GroupController",
     "Method": "Create",
     "RelativePath": "api/Group/createGroup",
     "HttpMethod": "POST",
@@ -418,6 +344,38 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.GroupController",
+    "Method": "GetMessagesByGroup",
+    "RelativePath": "api/Group/getMessagesByGroup/{groupId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "groupId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.GroupController",
+    "Method": "SaveMessage",
+    "RelativePath": "api/Group/saveMessageGroup",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "messageGroupBody",
+        "Type": "Chat_Project.DTOs.MessageGroupDTO.MessageGroupAddDTO",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {

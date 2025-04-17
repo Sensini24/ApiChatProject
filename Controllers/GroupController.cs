@@ -21,6 +21,7 @@ namespace Chat_Project.Controllers
         {
             _db = db;
         }
+
         [HttpGet]
         [Route("getGroups")]
         public async Task<IActionResult> Get()
@@ -64,6 +65,57 @@ namespace Chat_Project.Controllers
                     success = true,
                     message = "Grupo creado correctamente",
                     groups = gruposcompletosdto
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "Ocurrió un error en el servidor.", error = ex.Message });
+            }
+        }
+
+
+        [HttpGet]
+        [Route("getMessagesByGroup/{groupId}")]
+        public async Task<IActionResult> GetMessagesByGroup(int groupId)
+        {
+            try
+            {
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+                //var messagesGroup = await _db.MessagesGroups.Where(n => n.GroupId == groupId && n.UserId == userId).ToListAsync();
+                var messagesGroup = await _db.MessagesGroups.Where(n => n.GroupId == groupId).ToListAsync();
+
+                if (messagesGroup == null )
+                {
+                    return NotFound(new
+                    {
+                        success = false,
+                        message = "El grupo no existe."
+                    });
+                }
+
+                if (messagesGroup.Count() == 0)
+                {
+                    return Ok(new
+                    {
+                        success = false,
+                        message = "No se encontraron mensajes de este grupo."
+                    });
+                }
+
+                var messagesCompletos = messagesGroup.Select(x => new MessageGroupGetDTO
+                {
+                    MessagesGroupId = x.MessagesGroupId,
+                    UserId = x.UserId,
+                    GroupId = x.GroupId,
+                    MessageText = x.MessageText,
+                    MessageDate = x.MessageDate
+                }).ToList();
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Mensajes obtenidos correctamente",
+                    messages = messagesCompletos
                 });
             }
             catch (Exception ex)
@@ -163,47 +215,56 @@ namespace Chat_Project.Controllers
                 return StatusCode(500, new { success = false, message = "Ocurrió un error en el servidor.", error = ex.Message });
             }
         }
-
-        // GET: GroupController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: GroupController/Edit/5
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        [Route("saveMessageGroup")]
+        public async Task<IActionResult> SaveMessage([FromBody] MessageGroupAddDTO messageGroupBody)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+                if (messageGroupBody == null)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Envíe un grupo válido con contenido"
+                    });
+                }
 
-        // GET: GroupController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+                var newMessage = new MessagesGroup
+                {
+                    UserId = messageGroupBody.UserId,
+                    GroupId = messageGroupBody.GroupId,
+                    MessageText = messageGroupBody.MessageText,
+                    MessageDate = new DateTime(),
+                    IsRead = false,
+                    IsDeleted = false,
+                };
 
-        // POST: GroupController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
+                await _db.MessagesGroups.AddAsync(newMessage);
+                await _db.SaveChangesAsync();
+
+                var messageGetDto = new MessageGroupGetDTO()
+                {
+                    MessagesGroupId = newMessage.MessagesGroupId,
+                    UserId = newMessage.UserId,
+                    GroupId = newMessage.GroupId,
+                    MessageText = newMessage.MessageText,
+                    MessageDate = newMessage.MessageDate
+
+                };
+                return Ok(new
+                {
+                    success = true,
+                    message = "El mensaje fue guardado correctamente",
+                    groupMessage = messageGetDto
+                });
+
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                return StatusCode(500, new { success = false, message = "Ocurrió un error en el servidor.", error = ex.Message });
             }
         }
+        
     }
 }
