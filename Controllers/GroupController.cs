@@ -23,7 +23,7 @@ namespace Chat_Project.Controllers
         }
 
         [HttpGet]
-        [Route("getGroups")]
+        [Route("getGroupsByUser")]
         public async Task<IActionResult> Get()
         {
             try
@@ -63,7 +63,46 @@ namespace Chat_Project.Controllers
                 return Ok(new
                 {
                     success = true,
-                    message = "Grupo creado correctamente",
+                    message = "Grupos obtenidos correctamente",
+                    groups = gruposcompletosdto
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "Ocurrió un error en el servidor.", error = ex.Message });
+            }
+        }
+
+        [HttpGet]
+        [Route("getGroups")]
+        public async Task<IActionResult> GetGroups()
+        {
+            try
+            {
+                var gruposCompletos = _db.Groups.ToList();
+
+                if (gruposCompletos == null)
+                {
+                    return NotFound(new
+                    {
+                        success = false,
+                        message = "Guardado con éxito pero no se encontró un resultado que devolver en base de datos."
+                    });
+                }
+
+                var gruposcompletosdto = gruposCompletos.Select(x => new GroupSearcherdGetDTO
+                {
+                    GroupId = x.GroupId,
+                    NameGroup = x.NameGroup,
+                    DateCreated = x.DateCreated,
+                    IsDeleted = x.IsDeleted,
+                    GroupCategory = x.GroupCategory
+                }).ToList();
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Grupos obtenidos correctamente",
                     groups = gruposcompletosdto
                 });
             }
@@ -82,7 +121,7 @@ namespace Chat_Project.Controllers
             {
                 var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
                 //var messagesGroup = await _db.MessagesGroups.Where(n => n.GroupId == groupId && n.UserId == userId).ToListAsync();
-                var messagesGroup = await _db.MessagesGroups.Where(n => n.GroupId == groupId).ToListAsync();
+                var messagesGroup = await _db.MessagesGroups.Include(m=>m.User).Where(n => n.GroupId == groupId).ToListAsync();
 
                 if (messagesGroup == null )
                 {
@@ -106,6 +145,7 @@ namespace Chat_Project.Controllers
                 {
                     MessagesGroupId = x.MessagesGroupId,
                     UserId = x.UserId,
+                    Username = x.User.Username,
                     GroupId = x.GroupId,
                     MessageText = x.MessageText,
                     MessageDate = x.MessageDate
@@ -235,7 +275,7 @@ namespace Chat_Project.Controllers
                     UserId = messageGroupBody.UserId,
                     GroupId = messageGroupBody.GroupId,
                     MessageText = messageGroupBody.MessageText,
-                    MessageDate = new DateTime(),
+                    MessageDate = DateTime.Now,
                     IsRead = false,
                     IsDeleted = false,
                 };

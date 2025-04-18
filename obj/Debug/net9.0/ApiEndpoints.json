@@ -338,8 +338,18 @@
   },
   {
     "ContainingType": "Chat_Project.Controllers.GroupController",
-    "Method": "Get",
+    "Method": "GetGroups",
     "RelativePath": "api/Group/getGroups",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.GroupController",
+    "Method": "Get",
+    "RelativePath": "api/Group/getGroupsByUser",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,

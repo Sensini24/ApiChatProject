@@ -6,6 +6,7 @@ namespace Chat_Project.DTOs.MessageGroupDTO
     {
         public int MessagesGroupId { get; set; }
         public int UserId { get; set; }
+        public string? Username { get; set; }
         public int GroupId { get; set; }
         public string MessageText { get; set; }
         public DateTime MessageDate { get; set; }
