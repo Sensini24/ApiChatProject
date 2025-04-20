@@ -374,6 +374,22 @@
   },
   {
     "ContainingType": "Chat_Project.Controllers.GroupController",
+    "Method": "JoinGroup",
+    "RelativePath": "api/Group/joinGroup",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "gpdto",
+        "Type": "Chat_Project.DTOs.GroupParticipantsDTO.GroupParticipantsJoinAddDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.GroupController",
     "Method": "SaveMessage",
     "RelativePath": "api/Group/saveMessageGroup",
     "HttpMethod": "POST",
@@ -383,6 +399,22 @@
       {
         "Name": "messageGroupBody",
         "Type": "Chat_Project.DTOs.MessageGroupDTO.MessageGroupAddDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Chat_Project.Controllers.GroupController",
+    "Method": "FindGroupByInitials",
+    "RelativePath": "api/Group/searchGroup/{initials}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "initials",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],

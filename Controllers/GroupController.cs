@@ -3,6 +3,7 @@ using Chat_Project.Data;
 using Chat_Project.DTOs.GroupDTO;
 using Chat_Project.DTOs.GroupParticipantsDTO;
 using Chat_Project.DTOs.MessageGroupDTO;
+using Chat_Project.DTOs.UserDTO;
 using Chat_Project.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -255,6 +256,7 @@ namespace Chat_Project.Controllers
                 return StatusCode(500, new { success = false, message = "Ocurrió un error en el servidor.", error = ex.Message });
             }
         }
+        
         [HttpPost]
         [Route("saveMessageGroup")]
         public async Task<IActionResult> SaveMessage([FromBody] MessageGroupAddDTO messageGroupBody)
@@ -305,6 +307,92 @@ namespace Chat_Project.Controllers
                 return StatusCode(500, new { success = false, message = "Ocurrió un error en el servidor.", error = ex.Message });
             }
         }
-        
+
+        [HttpGet]
+        [Route("searchGroup/{initials}")]
+        public async Task<IActionResult> FindGroupByInitials(string initials)
+        {
+            try
+            {
+                var groups = await _db.Groups.FromSqlInterpolated($"SELECT * FROM Groups where NameGroup LIKE {initials + "%"}").ToListAsync();
+                //var userFound = await _context.Users.Where(x => x.Username.Contains(initials)).ToListAsync();
+                var groupDto = groups.Select(x => new GroupSearcherdGetDTO
+                {
+                    GroupId = x.GroupId,
+                    NameGroup = x.NameGroup,
+                    DateCreated = x.DateCreated,
+                    IsDeleted = x.IsDeleted,
+                    GroupCategory = x.GroupCategory
+                });
+
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "Grupos por iniciales obtenidas.",
+                    groups = groupDto,
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    e
+                });
+            }
+        }
+
+
+        [HttpPost]
+        [Route("joinGroup")]
+        public async Task<IActionResult> JoinGroup([FromBody] GroupParticipantsJoinAddDTO gpdto)
+        {
+            try
+            {
+                if(gpdto == null)
+                {
+                    return NotFound();
+                }
+                //var userFound = await _context.Users.Where(x => x.Username.Contains(initials)).ToListAsync();
+                var newGroupParticipants = new GroupParticipants
+                {
+                    UserId = gpdto.UserId,
+                    GroupId = gpdto.GroupId,
+                    DateJoined = DateTime.Now,
+                    InvitationStatus = gpdto.InvitationStatus,
+                    Rol = "Member",
+                    isFavorite = false
+                };
+
+                await _db.GroupParticipants.AddAsync(newGroupParticipants);
+                await _db.SaveChangesAsync();
+
+
+                return Ok(new
+                {
+                    success = true,
+                    message = "El usuario se unió correctamente al grupo.",
+                    groupParticipant = new GroupParticipantsGetDTO()
+                    {
+                        GroupParticipantsId = newGroupParticipants.GroupParticipantsId,
+                        UserId = newGroupParticipants.UserId,
+                        GroupId = newGroupParticipants.GroupId,
+                        DateJoined = newGroupParticipants.DateJoined,
+                        InvitationStatus = newGroupParticipants.InvitationStatus,
+                        Rol = newGroupParticipants.Rol,
+                        isFavorite = newGroupParticipants.isFavorite
+                    },
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    e
+                });
+            }
+        }
     }
 }
