@@ -29,4 +29,5 @@ public class User
     //A partir de aqui para crear mensajes de grupos y listar los participantes de los grupos
     public ICollection<GroupParticipants> GroupParticipants { get; set; }
     public ICollection<MessagesGroup> GroupMessages { get; set; }
+    public ICollection<FilePrivateChat> FilePrivateChats { get; set; }
 }

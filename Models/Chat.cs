@@ -6,4 +6,5 @@ public class Chat
     public string NameChat { get; set; }
     public ICollection<Message> Messages { get; set; }
     public ICollection<ChatParticipant> ChatParticipants { get; set; }
+    public ICollection<FilePrivateChat> FilePrivateChats { get; set; }
 }

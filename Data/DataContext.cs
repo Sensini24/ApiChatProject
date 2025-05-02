@@ -18,6 +18,7 @@ public class DataContext : DbContext
     public DbSet<Group> Groups { get; set; }
     public DbSet<GroupParticipants> GroupParticipants { get; set; }
     public DbSet<MessagesGroup> MessagesGroups { get; set; }
+    public DbSet<FilePrivateChat> FilePrivateChats { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -59,7 +60,7 @@ public class DataContext : DbContext
             .WithMany()
             .HasForeignKey(p => p.ContactUserId)
             .OnDelete(DeleteBehavior.Restrict);
-
+          
         modelBuilder.Entity<GroupParticipants>()
             .HasOne(p=>p.User)
             .WithMany(p=>p.GroupParticipants)
@@ -83,5 +84,21 @@ public class DataContext : DbContext
             .WithMany(p => p.GroupMessages)
             .HasForeignKey(p => p.GroupId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<FilePrivateChat>()
+            .HasOne(p=>p.User)
+            .WithMany(p=>p.FilePrivateChats)
+            .HasForeignKey(p=>p.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<FilePrivateChat>()
+            .HasOne(p => p.Chat)
+            .WithMany(p => p.FilePrivateChats)
+            .HasForeignKey(p=>p.ChatId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<FilePrivateChat>()
+                 .Property(o => o.FileSize)
+                 .HasColumnType("decimal(18, 2)");
     }
 }
