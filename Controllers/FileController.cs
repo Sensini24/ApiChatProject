@@ -42,6 +42,8 @@ namespace Chat_Project.Controllers
                 {
                     string nameFile = file.FileName;
                     decimal sizeInMB = Math.Round((decimal)file.Length / (1024 * 1024), 2);
+                    string mimeType = file.ContentType;
+                    string fileExtension = Path.GetExtension(file.FileName);
                     string FinalPath = Path.Combine(pathFiles, nameFile);
                     listaNombres.Add(nameFile, nameChat);
                     //if(System.IO.File.Exists("da")){
@@ -56,8 +58,8 @@ namespace Chat_Project.Controllers
                         FileName = nameFile,
                         FileSize = sizeInMB,
                         UploadDate = DateTime.Now,
-                        FileType = file.GetType().ToString(),
-                        FileExtension = "",
+                        FileType = mimeType,
+                        FileExtension = fileExtension,
                         FilePath = FinalPath
                     };
                     await _db.FilePrivateChats.AddAsync(saveFile);
@@ -96,6 +98,41 @@ namespace Chat_Project.Controllers
 
             }
 
+        }
+
+        [HttpGet]
+        [Route("getFilesChatPrivate/{nameChat}")]
+        public async Task<IActionResult> GetFiles(string nameChat)
+        {
+            if (String.IsNullOrEmpty(nameChat))
+            {
+                return NotFound(new
+                {
+                    message = "Asegúrate de enviar un nombre válido",
+                    success = false
+                });
+            }
+
+            int? idChat = await _db.Chats.Where(n => n.NameChat == nameChat).Select(i => (int?)i.Id).FirstOrDefaultAsync();
+
+            if (idChat == null)
+            {
+                return NotFound(new
+                {
+                    message = "No se encontró el chat buscado",
+                    success = false
+                });
+            }
+
+            //var filesFounded = await _db.FilePrivateChats.Where(n => n.ChatId == idChat.Value).ToListAsync();
+            var filesFounded  = _db.FilePrivateChats.FromSqlInterpolated($"SELECT fp.* FROM FilePrivateChats fp INNER JOIN Chats ch on fp.ChatId = ch.Id WHERE ch.Id = {idChat}").ToList();
+
+            return Ok(new
+            {
+                message = "Archivos encontrados",
+                success = true,
+                files = filesFounded
+            });
         }
     }
 }
