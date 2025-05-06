@@ -8,6 +8,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
+/*
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(7119, listenOptions =>
+    {
+        listenOptions.UseHttps("devcert.pfx", "1234"); // ruta relativa o absoluta y contraseña
+    });
+});
+*/
 
 builder.Services.AddSignalR();
 // IMPLEMETNACION DE CORS
@@ -76,7 +85,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFrontend");
-// app.UseHttpsRedirection();
+ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

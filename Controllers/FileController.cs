@@ -22,13 +22,16 @@ namespace Chat_Project.Controllers
 
         [HttpPost]
         [Route("newFile")]
-        //public ActionResult Index(List<IFormFile> files)
+          //public ActionResult Index(List<IFormFile> files)
+          //public async Task<IActionResult> UploadFile([FromForm] string nameChat,  List<IFormFile> files)
         public async Task<IActionResult> UploadFile([FromForm] string nameChat,  List<IFormFile> files)
-        {
             try
             {
-                string pathFiles = $"D:\\Proyectos c#\\GUARDAR ARCHIVOS\\CHATPROJECTDATA\\{nameChat}";
-                if (!Directory.Exists(pathFiles))
+                // string pathFiles = $"D:\\Proyectos c#\\GUARDAR ARCHIVOS\\CHATPROJECTDATA\\{nameChat}";
+              
+              string pathFiles = $"/home/brandon/Documentos/ARCHIVOS_DE_RPOYECTOS/CHATPROJECTDATA/{nameChat}";
+
+              if (!Directory.Exists(pathFiles))
                 {
                     Directory.CreateDirectory(pathFiles);
                 }
@@ -124,7 +127,6 @@ namespace Chat_Project.Controllers
                 });
             }
 
-            //var filesFounded = await _db.FilePrivateChats.Where(n => n.ChatId == idChat.Value).ToListAsync();
             var filesFounded  = _db.FilePrivateChats.FromSqlInterpolated($"SELECT fp.* FROM FilePrivateChats fp INNER JOIN Chats ch on fp.ChatId = ch.Id WHERE ch.Id = {idChat}").ToList();
 
             return Ok(new
