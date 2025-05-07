@@ -25,9 +25,9 @@ namespace Chat_Project.Controllers
           //public ActionResult Index(List<IFormFile> files)
           //public async Task<IActionResult> UploadFile([FromForm] string nameChat,  List<IFormFile> files)
         public async Task<IActionResult> UploadFile([FromForm] string nameChat,  List<IFormFile> files)
+        {
             try
             {
-                // string pathFiles = $"D:\\Proyectos c#\\GUARDAR ARCHIVOS\\CHATPROJECTDATA\\{nameChat}";
               
               string pathFiles = $"/home/brandon/Documentos/ARCHIVOS_DE_RPOYECTOS/CHATPROJECTDATA/{nameChat}";
 
@@ -128,12 +128,23 @@ namespace Chat_Project.Controllers
             }
 
             var filesFounded  = _db.FilePrivateChats.FromSqlInterpolated($"SELECT fp.* FROM FilePrivateChats fp INNER JOIN Chats ch on fp.ChatId = ch.Id WHERE ch.Id = {idChat}").ToList();
+            
+            var fileGetDto = filesFounded.Select(x=> new FilePrivateChatGetDTO{
+               Id = x.Id,
+               UserId = x.UserId,
+               ChatId = x.ChatId,
+               FileName = x.FileName,
+               FileSize = x.FileSize,
+               UploadDate = x.UploadDate,
+               FileType = x.FileType,
+               FileExtension = x.FileExtension
 
+                }).ToList();
             return Ok(new
             {
                 message = "Archivos encontrados",
                 success = true,
-                files = filesFounded
+                files = fileGetDto
             });
         }
     }
