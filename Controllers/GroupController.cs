@@ -18,10 +18,11 @@ namespace Chat_Project.Controllers
     public class GroupController : Controller
     {
         private readonly DataContext _db;
-        public GroupController (DataContext db)
+        public GroupController(DataContext db)
         {
             _db = db;
         }
+
 
         [HttpGet]
         [Route("getGroupsByUser")]
@@ -33,6 +34,7 @@ namespace Chat_Project.Controllers
                 var grupoCompleto = _db.Groups
                 .Include(c => c.GroupParticipants)
                 .Where(gp => gp.GroupParticipants.Any(x => x.UserId == userId)).ToList();
+
 
                 if (grupoCompleto == null)
                 {
@@ -122,9 +124,9 @@ namespace Chat_Project.Controllers
             {
                 var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
                 //var messagesGroup = await _db.MessagesGroups.Where(n => n.GroupId == groupId && n.UserId == userId).ToListAsync();
-                var messagesGroup = await _db.MessagesGroups.Include(m=>m.User).Where(n => n.GroupId == groupId).ToListAsync();
+                var messagesGroup = await _db.MessagesGroups.Include(m => m.User).Where(n => n.GroupId == groupId).ToListAsync();
 
-                if (messagesGroup == null )
+                if (messagesGroup == null)
                 {
                     return NotFound(new
                     {
@@ -168,7 +170,7 @@ namespace Chat_Project.Controllers
         // POST: GroupController/Create
         [HttpPost]
         [Route("createGroup")]
-        public async Task <IActionResult> Create([FromBody] GroupAddDTO groupaddto)
+        public async Task<IActionResult> Create([FromBody] GroupAddDTO groupaddto)
         {
             try
             {
@@ -206,7 +208,7 @@ namespace Chat_Project.Controllers
                 await _db.AddRangeAsync(groupParticipants);
                 await _db.SaveChangesAsync();
 
-                var grupoCompleto = await _db.Groups.Where(g=>g.GroupId == grupo.GroupId).Include(gp=>gp.GroupParticipants).FirstOrDefaultAsync();
+                var grupoCompleto = await _db.Groups.Where(g => g.GroupId == grupo.GroupId).Include(gp => gp.GroupParticipants).FirstOrDefaultAsync();
                 if (grupoCompleto == null)
                 {
                     return NotFound(new
@@ -251,12 +253,12 @@ namespace Chat_Project.Controllers
                     group = grupocompletodto
                 });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, new { success = false, message = "Ocurrió un error en el servidor.", error = ex.Message });
             }
         }
-        
+
         [HttpPost]
         [Route("saveMessageGroup")]
         public async Task<IActionResult> SaveMessage([FromBody] MessageGroupAddDTO messageGroupBody)
@@ -350,7 +352,7 @@ namespace Chat_Project.Controllers
         {
             try
             {
-                if(gpdto == null)
+                if (gpdto == null)
                 {
                     return NotFound();
                 }

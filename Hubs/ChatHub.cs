@@ -1,35 +1,32 @@
 using System.Security.Claims;
-using Chat_Project.Models;
 using Chat_Project.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace Chat_Project.Hubs;
 
 [Authorize]
-public class ChatHub:Hub
+public class ChatHub : Hub
 {
     private readonly UserService _userService;
 
-    
+
     public ChatHub(UserService userService)
     {
         _userService = userService;
     }
 
 
-    private static  Dictionary<int,List<string>> connectionsId = new();
-    private readonly List<string>? listaInfoUsersConnected = new ();
-    
+    private static Dictionary<int, List<string>> connectionsId = new();
+    private readonly List<string>? listaInfoUsersConnected = new();
+
     public override async Task OnConnectedAsync()
     {
-       
+
         var usuario = await _userService.ObtenerInfoUser();
         int userId = usuario.UserId;
         string username = usuario.Username;
         string connectionId = Context.ConnectionId;
-        
+
         listaInfoUsersConnected.Add(connectionId);
         listaInfoUsersConnected.Add(username);
         if (connectionsId.ContainsKey(userId))
@@ -44,13 +41,13 @@ public class ChatHub:Hub
             await Clients.All.SendAsync("UserConnected", connectionsId);
             await base.OnConnectedAsync();
         }
-        
+
     }
-    
-    
+
+
     public override async Task OnDisconnectedAsync(Exception exception)
     {
-        var userId = int.Parse(Context.User.FindFirst(ClaimTypes.NameIdentifier).Value); 
+        var userId = int.Parse(Context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
         if (connectionsId.ContainsKey(userId))
         {
             //copio la informacion del usuario antes de de ser eliminado paara pasarselo al evento.
@@ -67,9 +64,9 @@ public class ChatHub:Hub
     {
         var user = _userService.ObtenerInfoUser();
         string username = user.Result.Username;
-        
-        var userId =  user.Result.UserId;
-        var userIdClaims = int.Parse(Context.User.FindFirst(ClaimTypes.NameIdentifier).Value);  
+
+        var userId = user.Result.UserId;
+        var userIdClaims = int.Parse(Context.User.FindFirst(ClaimTypes.NameIdentifier).Value);
         var connectionId = Context.ConnectionId;
         var date = DateTime.Now;
         await Clients.All.SendAsync("ReceiveMessage", username, message, userId, connectionId, date);

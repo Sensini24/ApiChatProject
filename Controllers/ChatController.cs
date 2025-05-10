@@ -40,7 +40,7 @@ namespace Chat_Project.Controllers
                 try
                 {
                     var namechat = chataddDTO.NameChat;
-                    var chat = await _db.Chats.Include(cp=>cp.ChatParticipants).FirstOrDefaultAsync(x => x.NameChat == namechat);
+                    var chat = await _db.Chats.Include(cp => cp.ChatParticipants).FirstOrDefaultAsync(x => x.NameChat == namechat);
                     bool isNewChat = chat == null;
 
                     if (isNewChat)
@@ -104,7 +104,7 @@ namespace Chat_Project.Controllers
                 });
             }
             var chat = _db.Chats.Where(c => c.NameChat == nameChat).FirstOrDefault();
-            if(chat == null)
+            if (chat == null)
             {
                 return NotFound(new
                 {
@@ -137,7 +137,7 @@ namespace Chat_Project.Controllers
                 .Include(c => c.Chat)
                 .Include(c => c.Chat.ChatParticipants)
                 .Where(c => c.Chat.NameChat == nameChat)
-                
+
                 .OrderBy(c => c.Id)
                 .Skip(0)
                 .Take(filasObtenerConsulta)
@@ -193,7 +193,7 @@ namespace Chat_Project.Controllers
                 });
             }
 
-            
+
             return Ok(new
             {
                 success = true,

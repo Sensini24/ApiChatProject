@@ -22,24 +22,24 @@ namespace Chat_Project.Controllers
 
         [HttpPost]
         [Route("newFile")]
-          //public ActionResult Index(List<IFormFile> files)
-          //public async Task<IActionResult> UploadFile([FromForm] string nameChat,  List<IFormFile> files)
-        public async Task<IActionResult> UploadFile([FromForm] string nameChat,  List<IFormFile> files)
+        //public ActionResult Index(List<IFormFile> files)
+        //public async Task<IActionResult> UploadFile([FromForm] string nameChat,  List<IFormFile> files)
+        public async Task<IActionResult> UploadFile([FromForm] string nameChat, List<IFormFile> files)
         {
             try
             {
-              
-              string pathFiles = $"/home/brandon/Documentos/ARCHIVOS_DE_RPOYECTOS/CHATPROJECTDATA/{nameChat}";
 
-              if (!Directory.Exists(pathFiles))
+                string pathFiles = $"/home/brandon/Documentos/ARCHIVOS_DE_RPOYECTOS/CHATPROJECTDATA/{nameChat}";
+
+                if (!Directory.Exists(pathFiles))
                 {
                     Directory.CreateDirectory(pathFiles);
                 }
 
 
 
-                var listaNombres = new Dictionary<string,string>();
-                var idChat = await _db.Chats.Where(n => n.NameChat == nameChat).Select(i=>i.Id).FirstOrDefaultAsync();
+                var listaNombres = new Dictionary<string, string>();
+                var idChat = await _db.Chats.Where(n => n.NameChat == nameChat).Select(i => i.Id).FirstOrDefaultAsync();
                 var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
                 foreach (var file in files)
                 {
@@ -81,26 +81,66 @@ namespace Chat_Project.Controllers
             {
                 return BadRequest(ex.Message);
             }
-            
+
         }
 
         public void SaveFile(IFormFile file, string path)
         {
 
-            using(FileStream fsWrite = new FileStream(path, FileMode.Create))
+            using (FileStream fsWrite = new FileStream(path, FileMode.Create))
 
-            using(Stream fsRead = file.OpenReadStream())
+            using (Stream fsRead = file.OpenReadStream())
             {
                 byte[] buffer = new byte[4096];
                 int bytes;
-                
-                while((bytes = fsRead.Read(buffer, 0, buffer.Length)) > 0)
+
+                while ((bytes = fsRead.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     fsWrite.Write(buffer, 0, bytes);
                 }
 
             }
 
+        }
+
+        [HttpGet]
+        [Route("dowloadFile/{idFile}")]
+        public async Task<IActionResult> DowloadFile(int idFile)
+        {
+            if (idFile == null || idFile == 0)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Id inválido"
+                });
+            }
+
+            var fileFounded = await _db.FilePrivateChats.Where(f => f.Id == idFile).FirstOrDefaultAsync();
+            if (fileFounded == null)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Archivo no encontrado"
+                });
+            }
+            string fileName = fileFounded.FileName;
+            string fileMime = fileFounded.FileType;
+            string filePath = fileFounded.FilePath;
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    fs.CopyTo(ms);
+                }
+
+                byte[] fileBytes = ms.ToArray();
+                ms.Position = 0;
+
+                return File(fileBytes, fileMime, fileName);
+            }
         }
 
         [HttpGet]
@@ -127,19 +167,20 @@ namespace Chat_Project.Controllers
                 });
             }
 
-            var filesFounded  = _db.FilePrivateChats.FromSqlInterpolated($"SELECT fp.* FROM FilePrivateChats fp INNER JOIN Chats ch on fp.ChatId = ch.Id WHERE ch.Id = {idChat}").ToList();
-            
-            var fileGetDto = filesFounded.Select(x=> new FilePrivateChatGetDTO{
-               Id = x.Id,
-               UserId = x.UserId,
-               ChatId = x.ChatId,
-               FileName = x.FileName,
-               FileSize = x.FileSize,
-               UploadDate = x.UploadDate,
-               FileType = x.FileType,
-               FileExtension = x.FileExtension
+            var filesFounded = _db.FilePrivateChats.FromSqlInterpolated($"SELECT fp.* FROM FilePrivateChats fp INNER JOIN Chats ch on fp.ChatId = ch.Id WHERE ch.Id = {idChat}").ToList();
 
-                }).ToList();
+            var fileGetDto = filesFounded.Select(x => new FilePrivateChatGetDTO
+            {
+                Id = x.Id,
+                UserId = x.UserId,
+                ChatId = x.ChatId,
+                FileName = x.FileName,
+                FileSize = x.FileSize,
+                UploadDate = x.UploadDate,
+                FileType = x.FileType,
+                FileExtension = x.FileExtension
+
+            }).ToList();
             return Ok(new
             {
                 message = "Archivos encontrados",
